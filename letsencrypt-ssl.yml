@@ -1,7 +1,7 @@
 ---
 - name: Check if certificate has already been generated
   stat: path=/etc/letsencrypt/live/{{letsencrypt_target_domain}}
-  register: repo
+  register: certificate
 
 - name: See if Let's Encrypt repo is present
   stat: path=/opt/letsencrypt/.git
@@ -13,7 +13,13 @@
 
 - name: Stop Nginx if its running
   shell: sudo service nginx stop
+  when: certificate.stat.exists == False
 
 - name: Generate certificate files
   shell: (cd /opt/letsencrypt && ./letsencrypt-auto certonly --agree-tos --agree-dev-preview --standalone  --server https://acme-v01.api.letsencrypt.org/directory --email {{letsencrypt_email}} -d {{ letsencrypt_target_domain }})
   become: True
+  when: certificate.stat.exists == False
+
+- name: Start Nginx
+  shell: sudo service nginx start
+  when: certificate.stat.exists == False
