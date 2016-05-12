@@ -14,6 +14,7 @@
 - name: Stop Nginx if its running
   shell: sudo service nginx stop
   when: certificate.stat.exists == False
+  ignore_errors: True
 
 - name: Generate certificate files
   shell: (cd /opt/letsencrypt && ./letsencrypt-auto certonly --agree-tos --agree-dev-preview --standalone  --server https://acme-v01.api.letsencrypt.org/directory --email {{letsencrypt_email}} -d {{ letsencrypt_target_domain }})
@@ -23,3 +24,4 @@
 - name: Start Nginx
   shell: sudo service nginx start
   when: certificate.stat.exists == False
+  ignore_errors: True
