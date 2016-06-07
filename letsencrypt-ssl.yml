@@ -21,6 +21,13 @@
   become: True
   when: certificate.stat.exists == False
 
+#- name: Creates renewal cronjob every other month
+#  cron: minute="0" hour="0" day="1" month="*/2"
+#        name="Renew certificate every 2 months"
+#        cron_file="letsencrypt"
+#        user="root"
+#        job="/usr/local/bin/mysqlbackup.WeeklyBackups.sh"
+
 - name: Start Nginx
   shell: sudo service nginx start
   when: certificate.stat.exists == False
